@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trockenbau Kalkulator</title>
+<style>
+  :root { --pad:16px; --radius:14px; }
+  html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0b0f14;color:#e9eef5;}
+  .wrap{max-width:720px;margin:0 auto;padding:calc(var(--pad) * 1.2) var(--pad);}
+  h1{font-size:1.25rem;margin:0 0 10px 0;}
+  .card{background:#121824;border:1px solid #1f2a3a;border-radius:var(--radius);padding:var(--pad);box-shadow:0 8px 24px rgba(0,0,0,.25);}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+  .field{flex:1 1 160px;display:flex;flex-direction:column;gap:6px;}
+  label{font-size:.9rem;color:#b9c7d9;}
+  input{appearance:none;border:1px solid #2b394f;background:#0f1520;color:#e9eef5;border-radius:12px;padding:12px 14px;font-size:1.05rem;outline:none;width:100%;}
+  input:focus{border-color:#3e8ef7;box-shadow:0 0 0 3px rgba(62,142,247,.25);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .result{background:#0e1420;border:1px dashed #2b394f;border-radius:12px;padding:12px;}
+  .result h3{margin:0 0 8px 0;font-size:1rem;color:#c7d7eb;}
+  .resrow{display:flex;justify-content:space-between;margin:6px 0;font-size:1.05rem;}
+  .resrow.small{font-size:.95rem;color:#bdcbe0;}
+  .primary{background:#3e8ef7;border:none;color:white;border-radius:12px;padding:12px 16px;font-size:1.05rem;}
+  .ghost{background:transparent;border:1px solid #2b394f;color:#c7d7eb;border-radius:12px;padding:12px 16px;font-size:1.05rem;}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  footer{opacity:.7;margin-top:14px;font-size:.85rem;}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#132033;border:1px solid #2b394f;color:#c7d7eb;margin-right:6px;font-size:.85rem;}
+  .hint{background:#1a2233;border:1px solid #2b394f;border-radius:12px;padding:10px;margin:6px 0;color:#c7d7eb;font-size:.9rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Trockenbau Kalkulator</h1>
+  <div class="hint">iPhone: Bitte &bdquo;Teilen&ldquo; ► <b>In Safari öffnen</b>. In der Vorschau-App werden Skripte nicht ausgeführt.</div>
+  <div class="card">
+    <div class="row">
+      <div class="field">
+        <label for="area">Fläche (m²)</label>
+        <input id="area" type="number" inputmode="decimal" placeholder="z. B. 40" value="40" min="0" step="0.01">
+      </div>
+      <div class="field">
+        <label for="price">Preis an Kunde (€/m²)</label>
+        <input id="price" type="number" inputmode="decimal" placeholder="z. B. 45" value="45" min="0" step="0.01">
+      </div>
+      <div class="field">
+        <label for="wage">Lohn an Mitarbeiter (€/m², gesamt)</label>
+        <input id="wage" type="number" inputmode="decimal" placeholder="z. B. 12" value="12" min="0" step="0.01">
+      </div>
+      <div class="field">
+        <label for="fix">Fixkosten pauschal (€)</label>
+        <input id="fix" type="number" inputmode="decimal" placeholder="z. B. 100" value="100" min="0" step="0.01">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="vat">MwSt. (%)</label>
+        <input id="vat" type="number" inputmode="decimal" placeholder="19" value="19" min="0" step="0.1">
+      </div>
+      <div class="field">
+        <label for="q">Spachtel-Qualität</label>
+        <input id="q" placeholder="z. B. Q2 / Q3 (optional)">
+      </div>
+      <div class="field">
+        <label for="note">Notiz (optional)</label>
+        <input id="note" placeholder="Projektname / Adresse">
+      </div>
+    </div>
+
+    <div class="btns">
+      <button class="primary" id="calc">Berechnen</button>
+      <button class="ghost" id="reset">Zurücksetzen</button>
+      <button class="ghost" id="save">Eingaben merken</button>
+    </div>
+
+    <div class="grid" style="margin-top:12px;">
+      <div class="result">
+        <h3>Ergebnis (netto)</h3>
+        <div class="resrow"><span>Gesamtpreis Kunde</span><strong id="grossNet">–</strong></div>
+        <div class="resrow"><span>Gesamter Lohn (Mitarbeiter)</span><strong id="wageTotal">–</strong></div>
+        <div class="resrow small"><span>Fixkosten</span><span id="fixTotal">–</span></div>
+        <div class="resrow"><span>Gesamtkosten</span><strong id="costTotal">–</strong></div>
+        <div class="resrow"><span><span class="pill">Gewinn (netto)</span></span><strong id="profit">–</strong></div>
+      </div>
+      <div class="result">
+        <h3>Ergebnis (brutto)</h3>
+        <div class="resrow"><span>Brutto (inkl. MwSt.)</span><strong id="grossBrutto">–</strong></div>
+        <div class="resrow small"><span>Kunde zahlt pro m² (brutto)</span><span id="unitBrutto">–</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Tipp: Tippe auf <b>Eingaben merken</b>, damit der Kalkulator sich deine Standardwerte merkt (lokal auf deinem Gerät).
+  </footer>
+</div>
+
+<noscript><div class="wrap"><div class="hint">JavaScript ist deaktiviert – bitte in den Browser-Einstellungen aktivieren.</div></div></noscript>
+
+<script>
+  // Safari-safe helpers (avoid special characters in function name)
+  function fmt(n){ return new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(n); }
+  function num(id){
+    var v = document.getElementById(id).value.replace(',', '.');
+    var n = parseFloat(v);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function calculate(){
+    var area = num('area');
+    var price = num('price');
+    var wage = num('wage');
+    var fix = num('fix');
+    var vat = num('vat')/100;
+
+    var totalNet = area * price;           // Gesamtpreis (netto)
+    var wageTotal = area * wage;           // Lohnsumme
+    var fixTotal = fix;                    // Fixkosten
+    var costTotal = wageTotal + fixTotal;  // Gesamtkosten (netto, ohne Material)
+    var profit = totalNet - costTotal;     // Gewinn (netto)
+    var totalBrutto = totalNet * (1 + vat);
+    var unitBrutto = price * (1 + vat);
+
+    document.getElementById('grossNet').textContent = fmt(totalNet);
+    document.getElementById('wageTotal').textContent = fmt(wageTotal);
+    document.getElementById('fixTotal').textContent = fmt(fixTotal);
+    document.getElementById('costTotal').textContent = fmt(costTotal);
+    document.getElementById('profit').textContent = fmt(profit);
+    document.getElementById('grossBrutto').textContent = fmt(totalBrutto);
+    document.getElementById('unitBrutto').textContent = fmt(unitBrutto);
+  }
+
+  function reset(){
+    var defaults = {area:'40', price:'45', wage:'12', fix:'100', vat:'19', q:'', note:''};
+    for(var k in defaults){ document.getElementById(k).value = defaults[k]; }
+    calculate();
+  }
+
+  function saveDefaults(){
+    var keys = ['price','wage','vat'];
+    var data = {};
+    keys.forEach(function(k){ data[k] = document.getElementById(k).value; });
+    localStorage.setItem('tb_defaults', JSON.stringify(data));
+    alert('Standardwerte gespeichert ✅');
+  }
+
+  function loadDefaults(){
+    try{
+      var raw = localStorage.getItem('tb_defaults');
+      if(!raw) return;
+      var d = JSON.parse(raw);
+      if(d.price) document.getElementById('price').value = d.price;
+      if(d.wage) document.getElementById('wage').value = d.wage;
+      if(d.vat) document.getElementById('vat').value = d.vat;
+    }catch(e){}
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    document.getElementById('calc').addEventListener('click', calculate);
+    document.getElementById('reset').addEventListener('click', reset);
+    document.getElementById('save').addEventListener('click', saveDefaults);
+    document.querySelectorAll('input').forEach(function(el){
+      el.addEventListener('keydown', function(e){ if(e.key==='Enter'){ calculate(); }});
+    });
+    loadDefaults();
+    calculate();
+  });
+</script>
+</body>
+</html>
