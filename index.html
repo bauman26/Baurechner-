@@ -1,219 +1,370 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
   <title>Hausmeisterservice Hashimi – Baukalkulator</title>
   <style>
-    :root {
-      --bg: #1e1e1e;
-      --surface: #2b2b2b;
-      --accent: #9ad39b;
-      --text: #f0f0f0;
-      --line: #2f6b52;
+    :root{
+      --bg:#0b1012; --surface:#141a1e; --card:#1b2227;
+      --ink:#e9f2ee; --muted:#9ec2b3; --line:#233039;
+      --accent:#7ed28f; --accent-ink:#0b1210;
+      --pad:16px; --radius:14px; --shadow:0 6px 24px rgba(0,0,0,.35)
     }
-
-    body {
-      font-family: Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding-top: 110px; /* Platz für festen Header */
-    }
-
-    /* ===== Fester Header mit Logo & Kontakt ===== */
-    .site-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background-color: #0f1418;
-      border-bottom: 2px solid var(--line);
-    }
-
-    .header-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 10px 20px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand img {
-      width: 60px;
-      height: auto;
-      border-radius: 8px;
-    }
-
-    .brand-text strong {
-      font-size: 1.4em;
-      color: var(--accent);
-      display: block;
-      line-height: 1.1;
-    }
-
-    .brand-text small {
-      font-size: 0.9em;
-      color: #ccc;
-    }
-
-    .contact {
-      text-align: right;
-    }
-
-    .contact a {
-      display: block;
-      color: #ccc;
-      text-decoration: none;
-      font-size: 0.9em;
-      margin: 2px 0;
-    }
-
-    .contact a:hover {
-      color: var(--accent);
-    }
-
-    /* ===== Hauptinhalt ===== */
-    .section {
-      background: var(--surface);
-      margin: 20px auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-    }
-
-    h2 {
-      color: var(--accent);
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 5px;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-      text-align: left;
-      color: #ddd;
-    }
-
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border: none;
-      border-radius: 5px;
-      background: #333;
-      color: #fff;
-    }
-
-    button {
-      background-color: var(--accent);
-      color: #1e1e1e;
-      border: none;
-      padding: 10px 20px;
-      margin-top: 15px;
-      font-size: 1em;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    button:hover {
-      background-color: #7bbd7c;
-    }
-
-    .result {
-      margin-top: 15px;
-      background: #121212;
-      padding: 10px;
-      border-radius: 8px;
-      color: var(--accent);
-      font-weight: bold;
-      text-align: left;
-    }
-
-    footer {
-      text-align: center;
-      color: #999;
-      font-size: 0.8em;
-      margin: 30px 0;
-    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
+    body{background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .wrap{max-width:1080px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);backdrop-filter:saturate(130%) blur(6px)}
+    .brand{display:flex;align-items:center;gap:14px;padding:12px 16px}
+    .brand img{width:44px;height:44px;border-radius:10px;object-fit:cover;background:#fff}
+    .brand h1{margin:0;font-size:18px;font-weight:700;letter-spacing:.3px}
+    .brand small{display:block;color:var(--muted);font-weight:500;margin-top:2px}
+    .contact{display:flex;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:14px;margin-left:auto}
+    .contact a{color:inherit;text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+    @media (max-width:920px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card .inner{padding:var(--pad)}
+    h2{margin:.3rem 0 1rem 0;font-size:20px;color:var(--accent)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media (max-width:640px){.row{grid-template-columns:1fr}}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0f1418;color:var(--ink)}
+    details{background:#0e1417;border:1px dashed #2b394f;border-radius:12px;padding:12px 12px 8px 12px;margin-top:10px}
+    details summary{cursor:pointer;color:#9ed39f;margin:-8px -8px 8px -8px;padding:8px 8px 10px}
+    button{display:block;width:100%;padding:14px;border-radius:12px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;margin-top:12px;cursor:pointer}
+    .result{background:#0d1316;border-radius:12px;border:1px dashed #2b394f;margin-top:12px}
+    .result h3{margin:0;padding:10px 12px;border-bottom:1px solid #24313a;color:#a9e3b2}
+    .result .rows{padding:10px 12px}
+    .row2{display:flex;justify-content:space-between;gap:10px;padding:6px 0;font-size:14px}
+    .row2 span:first-child{color:var(--muted)}
+    .muted{color:var(--muted)}
+    footer{color:var(--muted);text-align:center;margin:28px 0}
   </style>
 </head>
 <body>
-
-  <!-- ===== Fester Header ===== -->
-  <header class="site-header">
-    <div class="header-wrap">
-      <div class="brand">
-        <img src="logo.png" alt="Hausmeisterservice Hashimi Logo">
-        <div class="brand-text">
-          <strong>Hausmeisterservice Hashimi</strong>
-          <small>Baukalkulator</small>
-        </div>
+  <header>
+    <div class="wrap brand">
+      <img src="logo.png" alt="Hausmeisterservice Hashimi Logo" />
+      <div>
+        <h1>Hausmeisterservice Hashimi <small>Baukalkulator</small></h1>
       </div>
-
       <div class="contact">
-        <a href="tel:017662806620">📞 0176 62806620</a>
-        <a href="mailto:Murtazahashimi5566@gmail.com">✉️ Murtazahashimi5566@gmail.com</a>
+        <span>📞 <a href="tel:017662806620">0176 62806620</a></span>
+        <span>✉️ <a href="mailto:murtazahashimi5566@gmail.com">murtazahashimi5566@gmail.com</a></span>
         <span>📍 Wesel</span>
       </div>
     </div>
   </header>
 
-  <!-- ===== Trockenbau Kalkulation ===== -->
-  <div class="section">
-    <h2>Trockenbau Kalkulation</h2>
-    <label>Fläche (m²):</label>
-    <input type="number" id="trockenbauFlaeche" placeholder="z. B. 50">
-    <label>Preis pro m² (€):</label>
-    <input type="number" id="trockenbauPreis" placeholder="z. B. 35">
-    <button onclick="calcTrockenbau()">Berechnen</button>
-    <div class="result" id="trockenbauErgebnis"></div>
-  </div>
+  <main class="wrap">
+    <div class="grid">
+      <!-- Trockenbau -->
+      <section class="card">
+        <div class="inner">
+          <h2>🧱 Trockenbau – Kalkulation (mit Mengen)</h2>
+          <div class="row">
+            <div>
+              <label>Fläche (m²)</label>
+              <input id="t_area" type="number" placeholder="z. B. 50" />
+            </div>
+            <div>
+              <label>MwSt (%)</label>
+              <input id="t_vat" type="number" value="19" />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Stundenlohn (€)</label>
+              <input id="t_wage" type="number" value="28" />
+            </div>
+            <div>
+              <label>Arbeitszeit h/m² (Montage + Q2, 1-lagig)</label>
+              <input id="t_labor_hpm2" type="number" step="0.01" value="0.40" />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Fixkosten pauschal (€)</label>
+              <input id="t_fix" type="number" value="100" />
+            </div>
+            <div>
+              <label>Schichtzahl</label>
+              <select id="t_layers">
+                <option value="1">1-lagig</option>
+                <option value="2">2-lagig</option>
+              </select>
+            </div>
+          </div>
 
-  <!-- ===== Putz & Spachtel Kalkulation ===== -->
-  <div class="section">
-    <h2>Putz & Spachtel Kalkulation</h2>
-    <label>Fläche (m²):</label>
-    <input type="number" id="putzFlaeche" placeholder="z. B. 40">
-    <label>Preis pro m² (€):</label>
-    <input type="number" id="putzPreis" placeholder="z. B. 25">
-    <button onclick="calcPutz()">Berechnen</button>
-    <div class="result" id="putzErgebnis"></div>
-  </div>
+          <details>
+            <summary>Material-Faktoren je m² & Einzelpreise (anpassbar)</summary>
+            <div class="row">
+              <div>
+                <label>GKB/GKF (m²/m²)</label>
+                <input id="t_f_board" type="number" step="0.01" value="1.0" />
+              </div>
+              <div>
+                <label>Unterkonstruktion CW/UW (m je m²)</label>
+                <input id="t_f_metal" type="number" step="0.01" value="2.2" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>Spachtel (kg/m²)</label>
+                <input id="t_f_filler" type="number" step="0.01" value="0.30" />
+              </div>
+              <div>
+                <label>Schrauben (Stk/m²)</label>
+                <input id="t_f_screws" type="number" step="1" value="12" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>Platte €/m²</label>
+                <input id="t_p_board" type="number" step="0.01" value="6.50" />
+              </div>
+              <div>
+                <label>Metall €/m</label>
+                <input id="t_p_metal" type="number" step="0.01" value="2.10" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>Spachtel €/kg</label>
+                <input id="t_p_filler" type="number" step="0.01" value="0.80" />
+              </div>
+              <div>
+                <label>Schrauben €/Stk</label>
+                <input id="t_p_screws" type="number" step="0.01" value="0.02" />
+              </div>
+            </div>
+          </details>
 
-  <footer>
-    © 2025 Hausmeisterservice Hashimi – Alle Rechte vorbehalten
-  </footer>
+          <button onclick="calcTrockenbau()">Berechnen</button>
+          <div class="result" id="t_out" style="display:none">
+            <h3>Ergebnis Trockenbau</h3>
+            <div class="rows" id="t_rows"></div>
+          </div>
+        </div>
+      </section>
 
-  <script>
-    function calcTrockenbau() {
-      const f = parseFloat(document.getElementById("trockenbauFlaeche").value) || 0;
-      const p = parseFloat(document.getElementById("trockenbauPreis").value) || 0;
-      const total = f * p;
-      document.getElementById("trockenbauErgebnis").innerText =
-        "Gesamtkosten: " + total.toFixed(2) + " €";
-    }
+      <!-- Putz & Spachtel -->
+      <section class="card">
+        <div class="inner">
+          <h2>🧴 Putz & Spachtel – Kalkulation (mit Mengen)</h2>
+          <div class="row">
+            <div>
+              <label>Fläche (m²)</label>
+              <input id="p_area" type="number" placeholder="z. B. 50" />
+            </div>
+            <div>
+              <label>MwSt (%)</label>
+              <input id="p_vat" type="number" value="19" />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Stundenlohn (€)</label>
+              <input id="p_wage" type="number" value="28" />
+            </div>
+            <div>
+              <label>Arbeitszeit h/m²</label>
+              <input id="p_labor_hpm2" type="number" step="0.01" value="0.25" />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Fixkosten pauschal (€)</label>
+              <input id="p_fix" type="number" value="80" />
+            </div>
+            <div>
+              <label>Schichtzahl</label>
+              <select id="p_layers">
+                <option value="1">1-lagig</option>
+                <option value="2">2-lagig</option>
+              </select>
+            </div>
+          </div>
 
-    function calcPutz() {
-      const f = parseFloat(document.getElementById("putzFlaeche").value) || 0;
-      const p = parseFloat(document.getElementById("putzPreis").value) || 0;
-      const total = f * p;
-      document.getElementById("putzErgebnis").innerText =
-        "Gesamtkosten: " + total.toFixed(2) + " €";
-    }
-  </script>
+          <details>
+            <summary>Material-Faktoren je m² & Einzelpreise (anpassbar)</summary>
+            <div class="row">
+              <div>
+                <label>Putz (kg/m² je Schicht)</label>
+                <input id="p_f_putz" type="number" step="0.1" value="1.4" />
+              </div>
+              <div>
+                <label>Spachtel (kg/m²)</label>
+                <input id="p_f_spachtel" type="number" step="0.1" value="0.5" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>Grundierung (l/m²)</label>
+                <input id="p_f_primer" type="number" step="0.01" value="0.10" />
+              </div>
+              <div>
+                <label>Gewebe (m²/m²)</label>
+                <input id="p_f_mesh" type="number" step="0.01" value="1.00" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>Putz €/25 kg</label>
+                <input id="p_p_putz_25" type="number" step="0.1" value="12" />
+              </div>
+              <div>
+                <label>Spachtel €/20 kg</label>
+                <input id="p_p_spachtel_20" type="number" step="0.1" value="10" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>Grundierung €/l</label>
+                <input id="p_p_primer_l" type="number" step="0.1" value="3" />
+              </div>
+              <div>
+                <label>Gewebe €/m²</label>
+                <input id="p_p_mesh_m2" type="number" step="0.1" value="1.2" />
+              </div>
+            </div>
+          </details>
+
+          <button onclick="calcPutz()">Berechnen</button>
+          <div class="result" id="p_out" style="display:none">
+            <h3>Ergebnis Putz & Spachtel</h3>
+            <div class="rows" id="p_rows"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>© Hausmeisterservice Hashimi • Inhaber: Murtaza Hashimi</footer>
+  </main>
+
+<script>
+  const fmt = n => new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+
+  function row(el, label, value){
+    const div = document.createElement('div');
+    div.className='row2';
+    div.innerHTML = `<span>${label}</span><span>${value}</span>`;
+    el.appendChild(div);
+  }
+
+  // Trockenbau
+  function calcTrockenbau(){
+    const A = +document.getElementById('t_area').value||0;
+    const vat = (+document.getElementById('t_vat').value||0)/100;
+    const wage = +document.getElementById('t_wage').value||0;
+    const hpm2 = +document.getElementById('t_labor_hpm2').value||0;
+    const fix = +document.getElementById('t_fix').value||0;
+    const layers = +document.getElementById('t_layers').value||1;
+
+    const f_board = +document.getElementById('t_f_board').value||0;
+    const f_metal = +document.getElementById('t_f_metal').value||0;
+    const f_fill  = +document.getElementById('t_f_filler').value||0;
+    const f_screw = +document.getElementById('t_f_screws').value||0;
+
+    const p_board = +document.getElementById('t_p_board').value||0;
+    const p_metal = +document.getElementById('t_p_metal').value||0;
+    const p_fill  = +document.getElementById('t_p_filler').value||0;
+    const p_screw = +document.getElementById('t_p_screws').value||0;
+
+    // Mengen
+    const qty_board = A * f_board * layers;     // m² Platten
+    const qty_metal = A * f_metal;              // m Profile
+    const qty_fill  = A * f_fill;               // kg
+    const qty_screw = A * f_screw;              // Stück
+
+    // Materialkosten
+    const mat = qty_board*p_board + qty_metal*p_metal + qty_fill*p_fill + qty_screw*p_screw;
+
+    // Lohn
+    const hours = A * hpm2;
+    const labor = hours * wage;
+
+    const netto = mat + labor + fix;
+    const mwst = netto * vat;
+    const brutto = netto + mwst;
+
+    // Ausgabe
+    const out = document.getElementById('t_out');
+    const rows = document.getElementById('t_rows');
+    rows.innerHTML = '';
+    row(rows,'Plattenmenge', `${fmt(qty_board)} m²`);
+    row(rows,'Profile', `${fmt(qty_metal)} m`);
+    row(rows,'Spachtel', `${fmt(qty_fill)} kg`);
+    row(rows,'Schrauben', `${fmt(qty_screw)} Stk`);
+    row(rows,'Materialkosten', `${fmt(mat)} €`);
+    row(rows,'Arbeitszeit', `${fmt(hours)} h`);
+    row(rows,'Lohnkosten', `${fmt(labor)} €`);
+    row(rows,'Fixkosten', `${fmt(fix)} €`);
+    row(rows,'Zwischensumme (netto)', `<strong>${fmt(netto)} €</strong>`);
+    row(rows,'MwSt', `${fmt(mwst)} €`);
+    row(rows,'Gesamt (brutto)', `<strong>${fmt(brutto)} €</strong>`);
+    out.style.display='block';
+  }
+
+  // Putz & Spachtel
+  function calcPutz(){
+    const A = +document.getElementById('p_area').value||0;
+    const vat = (+document.getElementById('p_vat').value||0)/100;
+    const wage = +document.getElementById('p_wage').value||0;
+    const hpm2 = +document.getElementById('p_labor_hpm2').value||0;
+    const fix = +document.getElementById('p_fix').value||0;
+    const layers = +document.getElementById('p_layers').value||1;
+
+    const f_putz = +document.getElementById('p_f_putz').value||0;          // kg/m² je Schicht
+    const f_spa  = +document.getElementById('p_f_spachtel').value||0;     // kg/m²
+    const f_pri  = +document.getElementById('p_f_primer').value||0;       // l/m²
+    const f_mesh = +document.getElementById('p_f_mesh').value||0;         // m²/m²
+
+    const p_putz25 = +document.getElementById('p_p_putz_25').value||0;    // €/25kg
+    const p_spa20  = +document.getElementById('p_p_spachtel_20').value||0;// €/20kg
+    const p_pril   = +document.getElementById('p_p_primer_l').value||0;   // €/l
+    const p_meshm2 = +document.getElementById('p_p_mesh_m2').value||0;    // €/m²
+
+    // Mengen
+    const qty_putz = A * f_putz * layers;     // kg
+    const qty_spa  = A * f_spa;               // kg
+    const qty_pri  = A * f_pri;               // Liter
+    const qty_mesh = A * f_mesh;              // m²
+
+    // Preise (auf kg/l/m² umgerechnet)
+    const p_putz_kg = p_putz25 / 25;
+    const p_spa_kg  = p_spa20  / 20;
+
+    const mat = qty_putz*p_putz_kg + qty_spa*p_spa_kg + qty_pri*p_pril + qty_mesh*p_meshm2;
+
+    const hours = A * hpm2;
+    const labor = hours * wage;
+
+    const netto = mat + labor + fix;
+    const mwst = netto * vat;
+    const brutto = netto + mwst;
+
+    const out = document.getElementById('p_out');
+    const rows = document.getElementById('p_rows');
+    rows.innerHTML = '';
+    row(rows,'Putzmenge', `${fmt(qty_putz)} kg`);
+    row(rows,'Spachtel', `${fmt(qty_spa)} kg`);
+    row(rows,'Grundierung', `${fmt(qty_pri)} l`);
+    row(rows,'Gewebe', `${fmt(qty_mesh)} m²`);
+    row(rows,'Materialkosten', `${fmt(mat)} €`);
+    row(rows,'Arbeitszeit', `${fmt(hours)} h`);
+    row(rows,'Lohnkosten', `${fmt(labor)} €`);
+    row(rows,'Fixkosten', `${fmt(fix)} €`);
+    row(rows,'Zwischensumme (netto)', `<strong>${fmt(netto)} €</strong>`);
+    row(rows,'MwSt', `${fmt(mwst)} €`);
+    row(rows,'Gesamt (brutto)', `<strong>${fmt(brutto)} €</strong>`);
+    out.style.display='block';
+  }
+</script>
 </body>
 </html>
