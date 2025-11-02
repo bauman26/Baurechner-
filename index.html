@@ -519,6 +519,33 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+  /* dein bisheriger Code ... */
+  
+  // Hier kommt der neue Code 👇👇👇
+  function wireUp(){
+    const byId = s => document.getElementById(s);
+
+    const tbBtn = byId('btn_tb');
+    const puBtn = byId('btn_putz');
+
+    if (tbBtn) {
+      tbBtn.addEventListener('click', () => {
+        if (typeof calcTrockenbau === 'function') calcTrockenbau();
+        if (typeof buildSummary === 'function') buildSummary();
+      });
+    }
+    if (puBtn) {
+      puBtn.addEventListener('click', () => {
+        if (typeof calcPutz === 'function') calcPutz();
+        if (typeof buildSummary === 'function') buildSummary();
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', wireUp);
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>
