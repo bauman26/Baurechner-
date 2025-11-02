@@ -337,8 +337,3 @@ function restoreInputs(){
   const raw=localStorage.getItem('hashimi_calc_settings'); if(!raw) return alert('Keine gespeicherten Eingaben gefunden.');
   const data=JSON.parse(raw);
   Object.entries(data).forEach(([k,v])=>{const el=document.getElementById(k); if(el) el.value=v;});
-  applyPreset(); alert('Eingaben geladen.');
-}
-</script>
-</body>
-</html>
